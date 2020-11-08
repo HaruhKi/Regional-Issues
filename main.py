@@ -6,6 +6,7 @@ from email.mime.text import MIMEText
 import datetime
 import http.server
 import socketserver
+import sendMail 
 
 
 
@@ -34,21 +35,25 @@ date = d.strftime("%Y-%m-%d")
 
 
 def trouble_search (file, number):
+    trouble_data = ''
     for key in TROUBLE:
         inpe = file[file['不具合情報'].str.match('^.*' + key + '.*$')]
         inpe_count = len(inpe)
         if (inpe_count >= 3):
             inpe.to_csv('to_csv_out_' + number + '_' + key + '.csv')
-            print(number + "の" + key + "の不具合は3回以上です。")
+            trouble_data = trouble_data + number + "の" + key + "の不具合は3回以上です。" + '\n'
+    print(trouble_data)
+    return inpe_count,trouble_data
+    #return に trouble_data　を追加しました
 
-    return inpe_count
-
+mailContent = ''
 for key in MACHINE_NUMBER:
     inpe = file[file['機番'].str.match('^.*' + key + '.*$')]
     # inpe.to_csv('to_csv_out_' + key + '_' + date + '.csv')
-    inpe_count =  trouble_search(inpe,key)
-
-
+    inpe_count,trouble_data =  trouble_search(inpe,key)
+    mailContent = mailContent + trouble_data
+    
+sendMail.send(mailContent)
 
 # PORT = 8000
 # Handler = http.server.SimpleHTTPRequestHandler
