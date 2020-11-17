@@ -66,5 +66,5 @@ for key in MACHINE_NUMBER:
     mailContent = mailContent + "【機体番号　" + key + "　】\n" + trouble_data + "\n"
     
 sendMail.send(mailContent)
-
+print("メールを送信しました。")
 
